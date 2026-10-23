@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F172A"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </linearGradient>
+    <linearGradient id="redTile" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F43F5E"/>
+      <stop offset="100%" stop-color="#BE123C"/>
+    </linearGradient>
+    <linearGradient id="blueTile" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8"/>
+      <stop offset="100%" stop-color="#1D4ED8"/>
+    </linearGradient>
+    <linearGradient id="yellowTile" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FDE047"/>
+      <stop offset="100%" stop-color="#D97706"/>
+    </linearGradient>
+    <linearGradient id="greenTile" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34D399"/>
+      <stop offset="100%" stop-color="#047857"/>
+    </linearGradient>
+    <filter id="tileShadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="12" stdDeviation="10" flood-color="#000000" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+
+  <!-- App Background -->
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)"/>
+  
+  <!-- Outer Ring Glow -->
+  <rect x="24" y="24" width="464" height="464" rx="96" fill="none" stroke="#334155" stroke-width="3" opacity="0.6"/>
+
+  <!-- 4 Jewel Color Puzzle Cubes -->
+  <g filter="url(#tileShadow)">
+    <!-- Top-Left Red Tile -->
+    <rect x="96" y="96" width="144" height="144" rx="32" fill="url(#redTile)"/>
+    <path d="M120 120 L216 120 A 8 8 0 0 0 208 128 L128 128 Z" fill="#FFFFFF" opacity="0.4"/>
+    <text x="168" y="185" font-family="system-ui, sans-serif" font-size="52" font-weight="900" fill="#FFFFFF" text-anchor="middle" opacity="0.9">♥</text>
+
+    <!-- Top-Right Blue Tile -->
+    <rect x="272" y="96" width="144" height="144" rx="32" fill="url(#blueTile)"/>
+    <path d="M296 120 L392 120 A 8 8 0 0 0 384 128 L304 128 Z" fill="#FFFFFF" opacity="0.4"/>
+    <text x="344" y="185" font-family="system-ui, sans-serif" font-size="52" font-weight="900" fill="#FFFFFF" text-anchor="middle" opacity="0.9">◆</text>
+
+    <!-- Bottom-Left Yellow Tile -->
+    <rect x="96" y="272" width="144" height="144" rx="32" fill="url(#yellowTile)"/>
+    <path d="M120 296 L216 296 A 8 8 0 0 0 208 304 L128 304 Z" fill="#FFFFFF" opacity="0.4"/>
+    <text x="168" y="361" font-family="system-ui, sans-serif" font-size="52" font-weight="900" fill="#FFFFFF" text-anchor="middle" opacity="0.9">★</text>
+
+    <!-- Bottom-Right Green Tile -->
+    <rect x="272" y="272" width="144" height="144" rx="32" fill="url(#greenTile)"/>
+    <path d="M296 296 L392 296 A 8 8 0 0 0 384 304 L304 304 Z" fill="#FFFFFF" opacity="0.4"/>
+    <text x="344" y="361" font-family="system-ui, sans-serif" font-size="52" font-weight="900" fill="#FFFFFF" text-anchor="middle" opacity="0.9">♣</text>
+  </g>
+
+  <!-- Sparkle stars in center -->
+  <circle cx="256" cy="256" r="16" fill="#F8FAFC" opacity="0.9"/>
+  <path d="M256 228 L260 252 L284 256 L260 260 L256 284 L252 260 L228 256 L252 252 Z" fill="#FBBF24"/>
+</svg>

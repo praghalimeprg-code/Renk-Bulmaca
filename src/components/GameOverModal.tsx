@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { Trophy, RotateCcw, ArrowRight, Star, Frown, Sparkles, Grid } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { LevelObjective } from '../types/game';
+import { haptics } from '../utils/haptics';
 
 interface GameOverModalProps {
   isOpen: boolean;
@@ -110,8 +111,11 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
             <div className="w-full flex flex-col gap-2.5">
               {hasNextLevel ? (
                 <button
-                  onClick={onNextLevel}
-                  className="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-rose-500 to-amber-500 hover:from-rose-400 hover:to-amber-400 text-white font-extrabold text-base flex items-center justify-center gap-2 shadow-lg shadow-rose-500/25 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                  onClick={() => {
+                    haptics.tap();
+                    onNextLevel();
+                  }}
+                  className="w-full min-h-[48px] py-3.5 px-6 rounded-2xl bg-gradient-to-r from-rose-500 to-amber-500 hover:from-rose-400 hover:to-amber-400 text-white font-extrabold text-base flex items-center justify-center gap-2 shadow-lg shadow-rose-500/25 transition-all hover:scale-[1.02] active:scale-[0.98]"
                 >
                   <span>Sonraki Bölüm</span>
                   <ArrowRight className="w-5 h-5" />
@@ -120,15 +124,21 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
 
               <div className="flex items-center gap-2">
                 <button
-                  onClick={onRetry}
-                  className="flex-1 py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-sm flex items-center justify-center gap-1.5 border border-slate-700 transition-colors"
+                  onClick={() => {
+                    haptics.tap();
+                    onRetry();
+                  }}
+                  className="flex-1 min-h-[44px] py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-sm flex items-center justify-center gap-1.5 border border-slate-700 transition-colors active:scale-95"
                 >
                   <RotateCcw className="w-4 h-4" />
                   <span>Tekrar Oyna</span>
                 </button>
                 <button
-                  onClick={onOpenLevelSelect}
-                  className="py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-sm flex items-center justify-center gap-1.5 border border-slate-700 transition-colors"
+                  onClick={() => {
+                    haptics.tap();
+                    onOpenLevelSelect();
+                  }}
+                  className="min-h-[44px] py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-sm flex items-center justify-center gap-1.5 border border-slate-700 transition-colors active:scale-95"
                   title="Bölüm Listesi"
                 >
                   <Grid className="w-4 h-4" />
@@ -176,16 +186,22 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
             {/* Action Buttons */}
             <div className="w-full flex flex-col gap-2.5">
               <button
-                onClick={onRetry}
-                className="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-400 hover:to-pink-400 text-white font-extrabold text-base flex items-center justify-center gap-2 shadow-lg shadow-rose-500/25 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                onClick={() => {
+                  haptics.tap();
+                  onRetry();
+                }}
+                className="w-full min-h-[48px] py-3.5 px-6 rounded-2xl bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-400 hover:to-pink-400 text-white font-extrabold text-base flex items-center justify-center gap-2 shadow-lg shadow-rose-500/25 transition-all hover:scale-[1.02] active:scale-[0.98]"
               >
                 <RotateCcw className="w-5 h-5" />
                 <span>Tekrar Dene</span>
               </button>
 
               <button
-                onClick={onOpenLevelSelect}
-                className="w-full py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-sm flex items-center justify-center gap-1.5 border border-slate-700 transition-colors"
+                onClick={() => {
+                  haptics.tap();
+                  onOpenLevelSelect();
+                }}
+                className="w-full min-h-[44px] py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-sm flex items-center justify-center gap-1.5 border border-slate-700 transition-colors active:scale-95"
               >
                 <Grid className="w-4 h-4" />
                 <span>Bölüm Seçimine Dön</span>

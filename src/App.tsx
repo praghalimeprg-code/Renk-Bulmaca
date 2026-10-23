@@ -14,6 +14,7 @@ import {
   hasAnyValidMoves,
 } from './utils/boardLogic';
 import { sound } from './utils/audio';
+import { haptics } from './utils/haptics';
 import { Header } from './components/Header';
 import { Hud } from './components/Hud';
 import { BoosterBar } from './components/BoosterBar';
@@ -21,6 +22,7 @@ import { Board } from './components/Board';
 import { LevelSelectModal } from './components/LevelSelectModal';
 import { GameOverModal } from './components/GameOverModal';
 import { HowToPlayModal } from './components/HowToPlayModal';
+import { MobileBottomNav } from './components/MobileBottomNav';
 
 const STORAGE_KEY = 'renk_bulmaca_player_data_v1';
 const ALL_COLORS: TileColor[] = ['red', 'blue', 'green', 'yellow', 'purple', 'orange'];
@@ -118,7 +120,7 @@ export default function App() {
   }, []);
 
   const startZenMode = useCallback(() => {
-    const initialBoard = createInitialBoard(8, 8, ['red', 'blue', 'green', 'yellow', 'purple', 'orange']);
+    const initialBoard = createInitialBoard(8, 8, ALL_COLORS);
     setBoard(initialBoard);
     setMovesLeft(999);
     setScore(0);
@@ -133,7 +135,7 @@ export default function App() {
   }, []);
 
   const startTimeAttack = useCallback(() => {
-    const initialBoard = createInitialBoard(8, 8, ['red', 'blue', 'green', 'yellow', 'purple']);
+    const initialBoard = createInitialBoard(8, 8, ALL_COLORS.slice(0, 5));
     setBoard(initialBoard);
     setScore(0);
     setCombo(1);
@@ -150,6 +152,7 @@ export default function App() {
   // Handle mode switches
   const handleSelectMode = (mode: GameMode) => {
     sound.playClick();
+    haptics.tap();
     setGameMode(mode);
     if (mode === 'levels') {
       startLevel(currentLevel);
@@ -177,6 +180,7 @@ export default function App() {
           setIsTimerRunning(false);
           // End of time attack
           sound.playVictory();
+          haptics.victory();
           setGameOverModal({ isOpen: true, isVictory: true });
           return 0;
         }
@@ -206,6 +210,7 @@ export default function App() {
     // 1. TOOL: HAMMER
     if (activeBooster === 'hammer') {
       sound.playBomb();
+      haptics.explosion();
       setActiveBooster('none');
       setProgress(p => ({
         ...p,
@@ -236,6 +241,7 @@ export default function App() {
     // 2. TOOL: PLACE BOMB
     if (activeBooster === 'bomb') {
       sound.playClick();
+      haptics.tap();
       setActiveBooster('none');
       setProgress(p => ({
         ...p,
@@ -257,7 +263,6 @@ export default function App() {
     // 3. REGULAR POP ATTEMPT
     const popResult = popTile(board, r, c);
     if (!popResult) {
-      // Not enough tiles to pop
       sound.playClick();
       return;
     }
@@ -267,19 +272,28 @@ export default function App() {
       setUndoStack(prev => [...prev.slice(-10), { board, score }]);
     }
 
-    // Play appropriate sound
+    // Play appropriate sound & mobile haptics
     if (popResult.triggerType === 'rocket_h' || popResult.triggerType === 'rocket_v') {
       sound.playRocket();
+      haptics.explosion();
       addFloatingText('ROKET!', (c / board[0].length) * 100, (r / board.length) * 100, '#38BDF8');
     } else if (popResult.triggerType === 'bomb') {
       sound.playBomb();
+      haptics.explosion();
       addFloatingText('GÜM!', (c / board[0].length) * 100, (r / board.length) * 100, '#F43F5E');
     } else if (popResult.triggerType === 'rainbow') {
       sound.playRainbow();
+      haptics.explosion();
       addFloatingText('PRİZMA!', (c / board[0].length) * 100, (r / board.length) * 100, '#C084FC');
     } else {
       sound.playPop(combo);
-      // Combo applause praise
+      if (combo >= 2) {
+        haptics.combo();
+      } else {
+        haptics.tap();
+      }
+
+      // Combo praise text
       const praiseWords = ['GÜZEL!', 'HARİKA!', 'MÜKEMMEL!', 'EFSANE!', 'SÜPER!'];
       if (combo >= 3) {
         const word = praiseWords[Math.min(combo - 3, praiseWords.length - 1)];
@@ -398,6 +412,7 @@ export default function App() {
   // Handle victory rewards and unlocked levels
   const handleVictory = (finalScore: number, remainingMoves: number) => {
     sound.playVictory();
+    haptics.victory();
 
     // Bonus for remaining moves
     const bonus = remainingMoves * 300;
@@ -430,7 +445,6 @@ export default function App() {
           ...p.levelScores,
           [currentLevel]: Math.max(currentBestScore, totalFinalScore),
         },
-        // Reward free boosters every 5 levels
         boosters: {
           hammer: p.boosters.hammer + (currentLevel % 5 === 0 ? 1 : 0),
           shuffle: p.boosters.shuffle + (currentLevel % 5 === 0 ? 1 : 0),
@@ -456,6 +470,7 @@ export default function App() {
   const handleUseShuffle = () => {
     if (progress.boosters.shuffle <= 0 || isLocked) return;
     sound.playClick();
+    haptics.tap();
 
     const colors: TileColor[] =
       gameMode === 'levels'
@@ -475,6 +490,7 @@ export default function App() {
   const handleUndo = () => {
     if (undoStack.length === 0 || isLocked) return;
     sound.playClick();
+    haptics.tap();
     const last = undoStack[undoStack.length - 1];
     setBoard(last.board);
     setScore(last.score);
@@ -500,8 +516,8 @@ export default function App() {
   }, [score, gameMode, progress.zenHighScore, progress.timeAttackHighScore]);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between selection:bg-rose-500 selection:text-white">
-      {/* Top Bar Contract */}
+    <div className="min-h-[100dvh] h-full bg-slate-950 text-slate-100 flex flex-col justify-between selection:bg-rose-500 selection:text-white overscroll-none">
+      {/* Top Bar */}
       <Header
         gameMode={gameMode}
         onSelectMode={handleSelectMode}
@@ -513,8 +529,8 @@ export default function App() {
         totalStars={totalStars}
       />
 
-      {/* Main Game Stage */}
-      <main className="flex-1 flex flex-col items-center justify-center p-2 sm:p-4 max-w-4xl mx-auto w-full">
+      {/* Main Game Stage (padded at bottom for Mobile Bottom Nav) */}
+      <main className="flex-1 flex flex-col items-center justify-center p-2 sm:p-4 max-w-4xl mx-auto w-full pb-20 sm:pb-4">
         {/* HUD Area */}
         <Hud
           gameMode={gameMode}
@@ -546,11 +562,13 @@ export default function App() {
           activeBooster={activeBooster}
           onSelectBooster={tool => {
             sound.playClick();
+            haptics.tap();
             setActiveBooster(tool);
           }}
           onUseShuffle={handleUseShuffle}
           onRestart={() => {
             sound.playClick();
+            haptics.tap();
             if (gameMode === 'levels') startLevel(currentLevel);
             else if (gameMode === 'zen') startZenMode();
             else startTimeAttack();
@@ -561,10 +579,18 @@ export default function App() {
         />
       </main>
 
-      {/* Subtle Anti-Slop Footer */}
-      <footer className="py-2.5 px-4 text-center text-xs text-slate-600 border-t border-slate-900">
-        <span>Renk Bulmaca · Klasik Kare Eşleştirme Oyunu</span>
+      {/* Subtle Desktop Footer */}
+      <footer className="hidden sm:block py-2 px-4 text-center text-xs text-slate-600 border-t border-slate-900">
+        <span>Renk Bulmaca · Klasik Mobil Kare Eşleştirme Oyunu</span>
       </footer>
+
+      {/* Mobile Fixed Bottom Navigation Bar (100% Mobile App Ergonomics) */}
+      <MobileBottomNav
+        gameMode={gameMode}
+        onSelectMode={handleSelectMode}
+        onOpenLevelSelect={() => setIsLevelSelectOpen(true)}
+        currentLevel={currentLevel}
+      />
 
       {/* Modals */}
       <LevelSelectModal
